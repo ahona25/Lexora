@@ -1,0 +1,744 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  CLIENT
+  LAWYER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  BANNED
+}
+
+enum LawyerVerificationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum ConsultationType {
+  VIDEO
+  AUDIO
+  CHAT
+  IN_PERSON
+}
+
+enum AppointmentStatus {
+  PENDING
+  AWAITING_PAYMENT
+  CONFIRMED
+  RESCHEDULE_REQUESTED
+  RESCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  REJECTED
+  NO_SHOW
+  REFUND_PENDING
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESSFUL
+  FAILED
+  CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+  CARD
+  BANK_TRANSFER
+  STRIPE
+  SSLCOMMERZ
+}
+
+enum NotificationType {
+  BOOKING_REQUEST
+  BOOKING_CONFIRMED
+  BOOKING_REJECTED
+  BOOKING_CANCELLED
+  BOOKING_RESCHEDULED
+  APPOINTMENT_REMINDER
+  CONSULTATION_STARTING
+  CONSULTATION_COMPLETED
+  PAYMENT_INITIATED
+  PAYMENT_SUCCESSFUL
+  PAYMENT_FAILED
+  REFUND_PROCESSED
+  NEW_MESSAGE
+  DOCUMENT_RECEIVED
+  VERIFICATION_APPROVED
+  VERIFICATION_REJECTED
+  PROFILE_STATUS_CHANGED
+  SECURITY_EVENT
+  PASSWORD_RESET
+  WELCOME
+}
+
+enum ComplaintStatus {
+  OPEN
+  UNDER_REVIEW
+  WAITING_FOR_INFO
+  RESOLVED
+  REJECTED
+  CLOSED
+}
+
+enum ComplaintCategory {
+  UNPROFESSIONAL_CONDUCT
+  PAYMENT_ISSUE
+  NO_SHOW
+  TECHNICAL_ISSUE
+  INAPPROPRIATE_CONTENT
+  FRAUD
+  OTHER
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum DocumentType {
+  CASE_DOCUMENT
+  IDENTIFICATION
+  COURT_ORDER
+  CONTRACT
+  EVIDENCE
+  LICENSE
+  CERTIFICATE
+  OTHER
+}
+
+enum DocumentAccessType {
+  PRIVATE
+  SHARED_WITH_LAWYER
+  SHARED_WITH_CLIENT
+  ADMIN_ONLY
+}
+
+// ============================================================
+// USER
+// ============================================================
+
+model User {
+  id                String     @id @default(uuid())
+  email             String     @unique
+  phone             String?    @unique
+  password          String
+  role              UserRole
+  status            UserStatus @default(ACTIVE)
+  emailVerified     Boolean    @default(false)
+  emailVerifiedAt   DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  // Relations
+  clientProfile     ClientProfile?
+  lawyerProfile     LawyerProfile?
+  adminProfile      AdminProfile?
+  sentMessages      Message[]         @relation("SentMessages")
+  notifications     Notification[]
+  auditLogs         AuditLog[]        @relation("AuditActor")
+  passwordResets    PasswordReset[]
+  refreshTokens     RefreshToken[]
+  sessions          UserSession[]
+
+  @@map("users")
+}
+
+// ============================================================
+// PROFILES
+// ============================================================
+
+model ClientProfile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName         String
+  lastName          String
+  profileImage      String?
+  dateOfBirth       DateTime?
+  address           String?
+  city              String?
+  country           String   @default("Bangladesh")
+  bio               String?  @db.Text
+  preferredLanguage String   @default("en")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  appointments      Appointment[]
+  reviews           Review[]
+  complaints        Complaint[]     @relation("ClientComplaints")
+  documents         Document[]
+  conversations     ConversationParticipant[]
+  payments          Payment[]
+
+  @@map("client_profiles")
+}
+
+model LawyerProfile {
+  id                         String                   @id @default(uuid())
+  userId                     String                   @unique
+  user                       User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName                  String
+  lastName                   String
+  profileImage               String?
+  professionalTitle          String?
+  barNumber                  String?                  @unique
+  yearsOfExperience          Int                      @default(0)
+  education                  Json?                    // Array of education objects
+  biography                  String?                  @db.Text
+  languages                  Json?                    // Array of language strings
+  country                    String                   @default("Bangladesh")
+  city                       String?
+  officeAddress              String?
+  officePhone                String?
+  consultationFee            Decimal                  @default(0) @db.Decimal(10, 2)
+  isAvailableForOnline       Boolean                  @default(true)
+  isAvailableForInPerson     Boolean                  @default(false)
+  verificationStatus         LawyerVerificationStatus @default(PENDING)
+  verificationNotes          String?                  @db.Text
+  verifiedAt                 DateTime?
+  verifiedByAdminId          String?
+  isPubliclyVisible          Boolean                  @default(false)
+  totalConsultations         Int                      @default(0)
+  averageRating              Decimal                  @default(0) @db.Decimal(3, 2)
+  totalReviews               Int                      @default(0)
+  totalEarnings              Decimal                  @default(0) @db.Decimal(10, 2)
+  pendingEarnings            Decimal                  @default(0) @db.Decimal(10, 2)
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+
+  // Relations
+  specializations            LawyerSpecialization[]
+  availabilitySchedule       AvailabilitySchedule[]
+  blockedSchedules           BlockedSchedule[]
+  appointments               Appointment[]
+  reviews                    Review[]
+  complaints                 Complaint[]              @relation("LawyerComplaints")
+  documents                  LawyerDocument[]
+  conversations              ConversationParticipant[]
+  transactions               Transaction[]
+  verificationDocuments      VerificationDocument[]
+
+  @@map("lawyer_profiles")
+}
+
+model AdminProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  profileImage String?
+  permissions Json?    // Array of permission strings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("admin_profiles")
+}
+
+// ============================================================
+// SPECIALIZATIONS
+// ============================================================
+
+model Specialization {
+  id          String                @id @default(uuid())
+  name        String                @unique
+  description String?               @db.Text
+  icon        String?
+  isActive    Boolean               @default(true)
+  displayOrder Int                  @default(0)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  // Relations
+  lawyers     LawyerSpecialization[]
+
+  @@map("specializations")
+}
+
+model LawyerSpecialization {
+  id               String         @id @default(uuid())
+  lawyerProfileId  String
+  lawyerProfile    LawyerProfile  @relation(fields: [lawyerProfileId], references: [id], onDelete: Cascade)
+  specializationId String
+  specialization   Specialization @relation(fields: [specializationId], references: [id])
+  isPrimary        Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+
+  @@unique([lawyerProfileId, specializationId])
+  @@map("lawyer_specializations")
+}
+
+// ============================================================
+// VERIFICATION DOCUMENTS
+// ============================================================
+
+model VerificationDocument {
+  id              String        @id @default(uuid())
+  lawyerProfileId String
+  lawyerProfile   LawyerProfile @relation(fields: [lawyerProfileId], references: [id], onDelete: Cascade)
+  documentType    String        // e.g., "bar_certificate", "license", "id", "degree"
+  fileName        String
+  fileKey         String        // Storage key (never exposed directly)
+  fileSize        Int
+  mimeType        String
+  uploadedAt      DateTime      @default(now())
+  isApproved      Boolean?      // null = pending, true = approved, false = rejected
+  reviewedAt      DateTime?
+  reviewNotes     String?       @db.Text
+
+  @@map("verification_documents")
+}
+
+// ============================================================
+// AVAILABILITY
+// ============================================================
+
+model AvailabilitySchedule {
+  id              String        @id @default(uuid())
+  lawyerProfileId String
+  lawyerProfile   LawyerProfile @relation(fields: [lawyerProfileId], references: [id], onDelete: Cascade)
+  dayOfWeek       DayOfWeek
+  startTime       String        // "HH:mm" format
+  endTime         String        // "HH:mm" format
+  slotDuration    Int           @default(60) // minutes
+  isActive        Boolean       @default(true)
+  breakStart      String?       // "HH:mm" - optional break
+  breakEnd        String?       // "HH:mm" - optional break
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([lawyerProfileId, dayOfWeek, startTime])
+  @@map("availability_schedules")
+}
+
+model BlockedSchedule {
+  id              String        @id @default(uuid())
+  lawyerProfileId String
+  lawyerProfile   LawyerProfile @relation(fields: [lawyerProfileId], references: [id], onDelete: Cascade)
+  blockedDate     DateTime      @db.Date
+  blockedTimeStart String?      // null = full day
+  blockedTimeEnd  String?
+  reason          String?
+  createdAt       DateTime      @default(now())
+
+  @@map("blocked_schedules")
+}
+
+// ============================================================
+// APPOINTMENTS
+// ============================================================
+
+model Appointment {
+  id                  String            @id @default(uuid())
+  appointmentNumber   String            @unique // e.g., "APT-2024-000001"
+  clientProfileId     String
+  clientProfile       ClientProfile     @relation(fields: [clientProfileId], references: [id])
+  lawyerProfileId     String
+  lawyerProfile       LawyerProfile     @relation(fields: [lawyerProfileId], references: [id])
+  consultationType    ConsultationType
+  appointmentDate     DateTime          @db.Date
+  startTime           String            // "HH:mm"
+  endTime             String            // "HH:mm"
+  status              AppointmentStatus @default(PENDING)
+  caseTitle           String?
+  caseCategory        String?
+  caseDescription     String?           @db.Text
+  urgency             String?           // "low", "medium", "high", "urgent"
+  additionalNotes     String?           @db.Text
+  consultationFee     Decimal           @db.Decimal(10, 2)
+  platformFee         Decimal           @default(0) @db.Decimal(10, 2)
+  totalAmount         Decimal           @db.Decimal(10, 2)
+  isRescheduled       Boolean           @default(false)
+  originalAppointmentId String?
+  cancellationReason  String?           @db.Text
+  cancelledAt         DateTime?
+  cancelledBy         String?
+  completedAt         DateTime?
+  consultationNotes   String?           @db.Text // Added by lawyer after consultation
+  reminderSent24h     Boolean           @default(false)
+  reminderSent1h      Boolean           @default(false)
+  reminderSent15m     Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  // Relations
+  payment             Payment?
+  review              Review?
+  documents           Document[]
+  messages            Message[]
+  consultation        Consultation?
+  notifications       Notification[]    @relation("AppointmentNotifications")
+
+  @@index([clientProfileId])
+  @@index([lawyerProfileId])
+  @@index([appointmentDate])
+  @@index([status])
+  @@map("appointments")
+}
+
+// ============================================================
+// CONSULTATIONS
+// ============================================================
+
+model Consultation {
+  id              String          @id @default(uuid())
+  appointmentId   String          @unique
+  appointment     Appointment     @relation(fields: [appointmentId], references: [id])
+  type            ConsultationType
+  roomId          String?         @unique // For video/audio rooms
+  startedAt       DateTime?
+  endedAt         DateTime?
+  duration        Int?            // Actual duration in minutes
+  status          String          @default("waiting") // waiting, active, ended
+  peerClientId    String?         // PeerJS ID for client
+  peerLawyerId    String?         // PeerJS ID for lawyer
+  recordingUrl    String?         // If recording is enabled
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("consultations")
+}
+
+// ============================================================
+// PAYMENTS
+// ============================================================
+
+model Payment {
+  id                 String        @id @default(uuid())
+  paymentNumber      String        @unique // e.g., "PAY-2024-000001"
+  appointmentId      String        @unique
+  appointment        Appointment   @relation(fields: [appointmentId], references: [id])
+  clientProfileId    String
+  clientProfile      ClientProfile @relation(fields: [clientProfileId], references: [id])
+  amount             Decimal       @db.Decimal(10, 2)
+  platformFee        Decimal       @default(0) @db.Decimal(10, 2)
+  lawyerAmount       Decimal       @db.Decimal(10, 2)
+  currency           String        @default("BDT")
+  paymentMethod      PaymentMethod?
+  status             PaymentStatus @default(PENDING)
+  gatewayProvider    String?       // "sslcommerz", "stripe"
+  gatewayReference   String?       @unique
+  gatewayResponse    Json?         // Full gateway response (never expose to client)
+  initiatedAt        DateTime?
+  completedAt        DateTime?
+  refundedAt         DateTime?
+  refundAmount       Decimal?      @db.Decimal(10, 2)
+  refundReason       String?       @db.Text
+  refundGatewayRef   String?
+  receiptNumber      String?       @unique
+  ipnVerified        Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  // Relations
+  transactions       Transaction[]
+
+  @@index([clientProfileId])
+  @@index([status])
+  @@map("payments")
+}
+
+model Transaction {
+  id              String        @id @default(uuid())
+  paymentId       String
+  payment         Payment       @relation(fields: [paymentId], references: [id])
+  lawyerProfileId String
+  lawyerProfile   LawyerProfile @relation(fields: [lawyerProfileId], references: [id])
+  type            String        // "credit", "debit", "refund"
+  amount          Decimal       @db.Decimal(10, 2)
+  description     String?
+  createdAt       DateTime      @default(now())
+
+  @@map("transactions")
+}
+
+// ============================================================
+// MESSAGES & CONVERSATIONS
+// ============================================================
+
+model Conversation {
+  id              String                    @id @default(uuid())
+  appointmentId   String?
+  lastMessageAt   DateTime?
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  // Relations
+  participants    ConversationParticipant[]
+  messages        Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id               String          @id @default(uuid())
+  conversationId   String
+  conversation     Conversation    @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  clientProfileId  String?
+  clientProfile    ClientProfile?  @relation(fields: [clientProfileId], references: [id])
+  lawyerProfileId  String?
+  lawyerProfile    LawyerProfile?  @relation(fields: [lawyerProfileId], references: [id])
+  lastReadAt       DateTime?
+  joinedAt         DateTime        @default(now())
+
+  @@unique([conversationId, clientProfileId])
+  @@unique([conversationId, lawyerProfileId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id              String         @id @default(uuid())
+  conversationId  String
+  conversation    Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          User           @relation("SentMessages", fields: [senderId], references: [id])
+  appointmentId   String?
+  appointment     Appointment?   @relation(fields: [appointmentId], references: [id])
+  content         String?        @db.Text
+  messageType     String         @default("text") // text, file, system
+  fileKey         String?
+  fileName        String?
+  fileSize        Int?
+  mimeType        String?
+  isRead          Boolean        @default(false)
+  readAt          DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@map("messages")
+}
+
+// ============================================================
+// DOCUMENTS
+// ============================================================
+
+model Document {
+  id              String             @id @default(uuid())
+  clientProfileId String
+  clientProfile   ClientProfile      @relation(fields: [clientProfileId], references: [id])
+  appointmentId   String?
+  appointment     Appointment?       @relation(fields: [appointmentId], references: [id])
+  documentType    DocumentType       @default(CASE_DOCUMENT)
+  access          DocumentAccessType @default(PRIVATE)
+  displayName     String
+  fileName        String             // Original filename
+  fileKey         String             // Storage key (never expose directly)
+  fileSize        Int
+  mimeType        String
+  description     String?
+  uploadedAt      DateTime           @default(now())
+
+  @@index([clientProfileId])
+  @@index([appointmentId])
+  @@map("documents")
+}
+
+model LawyerDocument {
+  id              String        @id @default(uuid())
+  lawyerProfileId String
+  lawyerProfile   LawyerProfile @relation(fields: [lawyerProfileId], references: [id])
+  displayName     String
+  fileName        String
+  fileKey         String
+  fileSize        Int
+  mimeType        String
+  description     String?
+  uploadedAt      DateTime      @default(now())
+
+  @@map("lawyer_documents")
+}
+
+// ============================================================
+// REVIEWS
+// ============================================================
+
+model Review {
+  id                String        @id @default(uuid())
+  appointmentId     String        @unique
+  appointment       Appointment   @relation(fields: [appointmentId], references: [id])
+  clientProfileId   String
+  clientProfile     ClientProfile @relation(fields: [clientProfileId], references: [id])
+  lawyerProfileId   String
+  lawyerProfile     LawyerProfile @relation(fields: [lawyerProfileId], references: [id])
+  rating            Int           // 1-5
+  reviewText        String?       @db.Text
+  isVisible         Boolean       @default(true)
+  moderatedAt       DateTime?
+  moderatedBy       String?
+  moderationReason  String?       @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([lawyerProfileId])
+  @@map("reviews")
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+model Notification {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            NotificationType
+  title           String
+  message         String           @db.Text
+  data            Json?            // Additional context data
+  appointmentId   String?
+  appointment     Appointment?     @relation("AppointmentNotifications", fields: [appointmentId], references: [id])
+  isRead          Boolean          @default(false)
+  readAt          DateTime?
+  emailSent       Boolean          @default(false)
+  smsSent         Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ============================================================
+// COMPLAINTS
+// ============================================================
+
+model Complaint {
+  id                  String          @id @default(uuid())
+  complaintNumber     String          @unique // e.g., "CMP-2024-000001"
+  clientProfileId     String
+  clientProfile       ClientProfile   @relation("ClientComplaints", fields: [clientProfileId], references: [id])
+  lawyerProfileId     String?
+  lawyerProfile       LawyerProfile?  @relation("LawyerComplaints", fields: [lawyerProfileId], references: [id])
+  appointmentId       String?
+  category            ComplaintCategory
+  subject             String
+  description         String          @db.Text
+  status              ComplaintStatus @default(OPEN)
+  adminNotes          String?         @db.Text
+  resolvedAt          DateTime?
+  resolvedBy          String?
+  attachmentKey       String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  @@map("complaints")
+}
+
+// ============================================================
+// AUDIT LOGS
+// ============================================================
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorId     String
+  actor       User     @relation("AuditActor", fields: [actorId], references: [id])
+  action      String   // e.g., "LAWYER_VERIFIED", "APPOINTMENT_CANCELLED"
+  targetType  String?  // e.g., "Appointment", "LawyerProfile"
+  targetId    String?
+  metadata    Json?    // Additional context
+  ipAddress   String?
+  userAgent   String?  @db.Text
+  result      String   @default("SUCCESS") // SUCCESS, FAILURE
+  createdAt   DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// AUTH TOKENS
+// ============================================================
+
+model PasswordReset {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("password_resets")
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model UserSession {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken String  @unique
+  ipAddress   String?
+  userAgent   String?  @db.Text
+  lastActiveAt DateTime @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@map("user_sessions")
+}
+
+// ============================================================
+// SYSTEM SETTINGS
+// ============================================================
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  isPublic    Boolean  @default(false) // Can be exposed to frontend
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@map("system_settings")
+}
