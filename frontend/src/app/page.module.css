@@ -1,0 +1,1218 @@
+/* ============================================================
+   HOMEPAGE STYLES â€” Lexora
+   Black & White + Gold Accent Lawyer Aesthetic
+   ============================================================ */
+
+.main {
+  min-height: 100vh;
+  background: #0A0A0A;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 100px 1.5rem 60px;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1600&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+}
+
+.heroGlow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.heroLines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.heroContent {
+  position: relative;
+  max-width: 850px;
+  flex: 1;
+  z-index: 2;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.03em;
+}
+
+.heroBadgeDot {
+  width: 7px;
+  height: 7px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.heroTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+}
+
+.heroTitleAccent {
+  color: #FFFFFF;
+  display: block;
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  color: #9CA3AF;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  max-width: 560px;
+}
+
+/* Search Box */
+.searchBox {
+  display: flex;
+  align-items: center;
+  background: #141414;
+  border: 1px solid #2A2A2A;
+  border-radius: 16px;
+  padding: 6px;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  flex-wrap: nowrap;
+}
+
+.searchField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  padding: 0.5rem 1rem;
+  min-width: 160px;
+}
+
+.searchIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.searchInput, .searchSelect {
+  border: none;
+  background: none;
+  outline: none;
+  color: #FFFFFF;
+  font-size: 0.9rem;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.searchInput::placeholder {
+  color: #6B7280;
+}
+
+.searchSelect option {
+  background: #141414;
+  color: #FFFFFF;
+}
+
+.searchDivider {
+  width: 1px;
+  height: 32px;
+  background: #2A2A2A;
+  flex-shrink: 0;
+}
+
+.searchBtn {
+  background: linear-gradient(135deg, #FFFFFF, #999999);
+  color: #000000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.searchBtn:hover {
+  background: linear-gradient(135deg, #E0E0E0, #FFFFFF);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+}
+
+.heroTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.heroTag {
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #2A2A2A;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  color: #6B7280;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.heroTag:hover {
+  border-color: #FFFFFF;
+  color: #FFFFFF;
+  background: rgba(201, 168, 76, 0.06);
+}
+
+/* Hero Visual */
+.heroVisual {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 2;
+  padding-left: 2rem;
+}
+
+.heroImageContainer {
+  position: relative;
+  width: 400px;
+  height: 500px;
+}
+
+.heroImageBg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #141414 0%, #1A1A1A 100%);
+  border-radius: 24px;
+  border: 1px solid #2A2A2A;
+}
+
+.heroImageGlow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle at 50% 50%, rgba(201, 168, 76, 0.15) 0%, transparent 70%);
+}
+
+.justiceImageWrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.justiceImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+}
+
+@keyframes expand {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.6; }
+}
+
+.heroCard1, .heroCard2 {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid #2A2A2A;
+  border-radius: 14px;
+  padding: 0.85rem 1.2rem;
+  backdrop-filter: blur(10px);
+  font-size: 0.85rem;
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+
+.heroCard1 { bottom: 60px; left: -30px; }
+.heroCard2 { top: 80px; right: -30px; animation-delay: 0.2s; }
+
+.heroCard1 span, .heroCard2 span { font-size: 1.5rem; }
+.heroCard1 strong, .heroCard2 strong { display: block; font-size: 1rem; color: #FFFFFF; font-weight: 700; }
+.heroCard1 small, .heroCard2 small { color: #6B7280; font-size: 0.75rem; }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+.stats {
+  background: #121212;
+  border-top: 1px solid #1A1A1A;
+  border-bottom: 1px solid #1A1A1A;
+  padding: 2.5rem 1.5rem;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.statItem {
+  text-align: center;
+  padding: 1.5rem;
+  border-right: 1px solid #1A1A1A;
+}
+
+.statItem:last-child {
+  border-right: none;
+}
+
+.statValue {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+  padding: 6rem 1.5rem;
+  background: #0A0A0A;
+}
+
+.darkSection {
+  background: #080808;
+}
+
+.sectionHeader {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 3.5rem;
+}
+
+.sectionTag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin-bottom: 0.75rem;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.sectionSubtitle {
+  font-size: 1rem;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+.sectionCta {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+/* ============================================================
+   CATEGORIES GRID
+   ============================================================ */
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.categoryCard {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 14px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.categoryCard:hover {
+  border-color: #FFFFFF;
+  background: rgba(201, 168, 76, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.1);
+}
+
+.categoryIcon {
+  font-size: 2rem;
+  display: block;
+}
+
+.categoryName {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #D1D5DB;
+  line-height: 1.3;
+}
+
+.categoryCount {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
+
+/* ============================================================
+   LAWYER CARDS
+   ============================================================ */
+.carouselHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.carouselControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.carouselNavBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #2A2A2A;
+  background: #141414;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carouselNavBtn:hover {
+  background: #FFFFFF;
+  color: #000000;
+  border-color: #FFFFFF;
+}
+
+.carouselWrapper {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.carouselTrack {
+  display: flex;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+
+.carouselSlide {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+.carouselPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+
+.carouselDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #333333;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.carouselDotActive {
+  width: 28px;
+  background: #FFFFFF;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.lawyersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+.lawyerCard {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+}
+
+.lawyerCard:hover {
+  border-color: #FFFFFF;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(201, 168, 76, 0.12);
+}
+
+.lawyerCardTop {
+  position: relative;
+  padding: 1.5rem 1.5rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lawyerAvatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF, #333333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  overflow: hidden;
+  border: 3px solid #1A1A1A;
+}
+
+.lawyerAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.verifiedIcon {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.lawyerCardBody {
+  padding: 1rem 1.5rem;
+  flex: 1;
+}
+
+.lawyerName {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.lawyerTitle {
+  font-size: 0.8rem;
+  color: #6B7280;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.lawyerSpecializations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.specTag {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.6rem;
+  background: rgba(201, 168, 76, 0.1);
+  color: #FFFFFF;
+  border-radius: 9999px;
+  font-weight: 600;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.lawyerMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.lawyerRating { color: #D1D5DB; }
+.lawyerExp { color: #6B7280; }
+
+.lawyerFee {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.feeLabel { font-size: 0.75rem; color: #6B7280; }
+.feeAmount { font-size: 1.1rem; font-weight: 700; color: #FFFFFF; }
+.feeUnit { font-size: 0.75rem; color: #6B7280; }
+
+.lawyerCardFooter {
+  border-top: 1px solid #1A1A1A;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lawyerLocation { font-size: 0.8rem; color: #6B7280; }
+.bookNow { font-size: 0.8rem; font-weight: 600; color: #FFFFFF; }
+
+/* Skeleton */
+.lawyerCardSkeleton {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeletonAvatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.skeletonLine {
+  height: 16px;
+  border-radius: 4px;
+  width: 80%;
+}
+
+.skeletonLineSm {
+  height: 12px;
+  border-radius: 4px;
+  width: 60%;
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  position: relative;
+}
+
+.stepCard {
+  position: relative;
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 16px;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  transition: all 0.25s;
+}
+
+.stepCard:hover {
+  border-color: #FFFFFF;
+  transform: translateY(-4px);
+}
+
+.stepNumber {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: rgba(201, 168, 76, 0.15);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stepIcon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.stepTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.stepDesc {
+  font-size: 0.8rem;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+.stepConnector {
+  position: absolute;
+  top: 50%;
+  right: -16px;
+  transform: translateY(-50%);
+  color: #FFFFFF;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+/* ============================================================
+   WHY CHOOSE
+   ============================================================ */
+.whyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.whyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.whySubtitle {
+  font-size: 1rem;
+  color: #6B7280;
+  line-height: 1.7;
+  margin-top: -0.5rem;
+}
+
+.whyList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.whyItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.whyItemIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.whyItem strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.whyItem p {
+  font-size: 0.85rem;
+  color: #6B7280;
+  line-height: 1.5;
+}
+
+/* Lawyer Sample Card */
+.whyVisual {
+  display: flex;
+  justify-content: center;
+}
+
+.whyCard {
+  background: #121212;
+  border: 1px solid #2A2A2A;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.whyCard::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.3), transparent, rgba(201, 168, 76, 0.1));
+  border-radius: 20px;
+  z-index: -1;
+}
+
+.whyCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.whyCardAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF, #333333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.whyCardHeader strong {
+  display: block;
+  color: #FFFFFF;
+  font-size: 0.95rem;
+}
+
+.whyCardHeader span {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
+
+.verifiedBadge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.whyCardStats {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-around;
+  text-align: center;
+  background: #1A1A1A;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.whyCardStats strong {
+  display: block;
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.whyCardStats span {
+  font-size: 0.72rem;
+  color: #6B7280;
+}
+
+.whyCardTypes {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.consultType {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #2A2A2A;
+  border-radius: 9999px;
+  color: #9CA3AF;
+}
+
+.whyCardFee {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.whyCardFee span {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.whyCardFee strong {
+  font-size: 1.4rem;
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testimonialsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.testimonialCard {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.25s;
+}
+
+.testimonialCard:hover {
+  border-color: #2A2A2A;
+  transform: translateY(-3px);
+}
+
+.testimonialStars { font-size: 0.9rem; }
+
+.testimonialText {
+  font-size: 0.95rem;
+  color: #D1D5DB;
+  line-height: 1.7;
+  font-style: italic;
+  flex: 1;
+}
+
+.testimonialAuthor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.testimonialAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFFFFF, #333333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.testimonialAuthor strong {
+  display: block;
+  font-size: 0.875rem;
+  color: #FFFFFF;
+}
+
+.testimonialAuthor span {
+  font-size: 0.75rem;
+  color: #6B7280;
+}
+
+/* ============================================================
+   FAQ
+   ============================================================ */
+.faqList {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.faqItem {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.faqOpen {
+  border-color: #FFFFFF;
+}
+
+.faqQuestion {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  font-weight: 500;
+  font-family: inherit;
+  transition: color 0.2s;
+  gap: 1rem;
+}
+
+.faqQuestion:hover { color: #FFFFFF; }
+
+.faqChevron {
+  font-size: 1.25rem;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  font-weight: 300;
+}
+
+.faqAnswer {
+  padding: 0 1.5rem 1.25rem;
+  font-size: 0.875rem;
+  color: #6B7280;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   CTA SECTION
+   ============================================================ */
+.ctaSection {
+  padding: 4rem 1.5rem;
+  background: #0A0A0A;
+}
+
+.ctaBanner {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #141414 0%, #1A1A1A 100%);
+  border: 1px solid #2A2A2A;
+  border-radius: 24px;
+  padding: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaBanner::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), transparent 60%);
+  border-radius: 24px;
+  z-index: 0;
+}
+
+.ctaContent {
+  position: relative;
+}
+
+.ctaTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.ctaSubtitle {
+  font-size: 1rem;
+  color: #6B7280;
+}
+
+.ctaActions {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .categoriesGrid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .stepsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .stepConnector {
+    display: none;
+  }
+
+  .whyGrid {
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    padding-top: 120px;
+    text-align: center;
+  }
+
+  .heroContent {
+    max-width: 100%;
+  }
+
+  .heroSubtitle {
+    max-width: 100%;
+  }
+
+  .heroVisual {
+    display: none;
+  }
+
+  .searchBox {
+    flex-direction: column;
+    border-radius: 12px;
+  }
+
+  .searchDivider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .searchField {
+    width: 100%;
+  }
+
+  .searchBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statItem:nth-child(2) {
+    border-right: none;
+  }
+
+  .categoriesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lawyersGrid,
+  .carouselSlide {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stepsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .whyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonialsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaBanner {
+    flex-direction: column;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .ctaActions {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .categoriesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .lawyersGrid,
+  .carouselSlide {
+    grid-template-columns: 1fr;
+  }
+
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

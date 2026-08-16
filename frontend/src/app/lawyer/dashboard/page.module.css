@@ -1,0 +1,59 @@
+﻿.verifiedTag {
+  font-size: 0.7rem;
+  color: #FFFFFF;
+}
+
+.pendingTag {
+  font-size: 0.7rem;
+  color: #FFFFFF;
+}
+
+.verificationBanner {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.verificationBanner span {
+  font-size: 1.5rem;
+}
+
+.verificationBanner strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #FFFFFF;
+  margin-bottom: 0.25rem;
+}
+
+.verificationBanner p {
+  font-size: 0.85rem;
+  color: #D1D5DB;
+  line-height: 1.5;
+}
+
+.earningsWidget {
+  text-align: right;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+}
+
+.earningsWidget span {
+  display: block;
+  font-size: 0.75rem;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.earningsWidget strong {
+  display: block;
+  font-size: 1.3rem;
+  color: #FFFFFF;
+  font-weight: 800;
+}

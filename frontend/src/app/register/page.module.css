@@ -1,0 +1,135 @@
+.main {
+  min-height: 100vh;
+  background: #0A0A0A;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 110px 1.5rem 5rem;
+  background-image: radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.02) 0%, transparent 60%);
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: #111111;
+  border: 1px solid #2A2A2A;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  margin-top: 1rem;
+}
+
+.cardHeader { text-align: center; margin-bottom: 2rem; }
+.logo { font-size: 2.5rem; margin-bottom: 0.75rem; margin-top: 0.25rem; display: block; }
+.title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+
+.typeToggle {
+  display: flex;
+  background: #0A0A0A;
+  border: 1px solid #1A1A1A;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.typeBtn {
+  flex: 1;
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: #6B7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.typeActive {
+  background: #1A1A1A;
+  color: #FFFFFF;
+  border: 1px solid rgba(201,168,76,0.2);
+}
+
+.lawyerNotice {
+  font-size: 0.78rem;
+  color: #6B7280;
+  background: rgba(201,168,76,0.05);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+}
+
+.errorAlert {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #EF4444;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.form { display: flex; flex-direction: column; }
+
+.formRow2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.divider {
+  text-align: center;
+  position: relative;
+  margin: 0.75rem 0 1rem;
+  color: #4B5563;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: #2A2A2A;
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.termsCheck {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #6B7280;
+  margin: 0.75rem 0;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.link { color: #FFFFFF; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+.loginLink {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .formRow2 { grid-template-columns: 1fr; }
+}
+
