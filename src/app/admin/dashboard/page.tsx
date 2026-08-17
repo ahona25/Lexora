@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/utils/supabase/client';
-import styles from '../../client/dashboard/page.module.css';
+import styles from './page.module.css';
 
 const SIDEBAR_LINKS = [
   { href: '/admin/dashboard', icon: '📊', label: 'Dashboard' },

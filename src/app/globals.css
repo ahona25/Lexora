@@ -19,20 +19,20 @@
   --text-disabled: #6B7280;
 
   /* Premium Accents */
-  --gold-primary: #FFFFFF;
-  --gold-hover: #E0E0E0;
-  --gold-dark: #CCCCCC;
-  --gold-glow: rgba(255, 255, 255, 0.25);
+  --gold-primary: #C9A84C;
+  --gold-hover: #D9B85C;
+  --gold-dark: #A9882C;
+  --gold-glow: rgba(201, 168, 76, 0.25);
   
   --silver-accent: #E2E8F0;
-  --status-success: #FFFFFF;
-  --status-success-bg: rgba(255, 255, 255, 0.15);
-  --status-error: #FFFFFF;
-  --status-error-bg: rgba(255, 255, 255, 0.15);
-  --status-warning: #FFFFFF;
-  --status-warning-bg: rgba(255, 255, 255, 0.15);
-  --status-info: #FFFFFF;
-  --status-info-bg: rgba(255, 255, 255, 0.15);
+  --status-success: #10B981;
+  --status-success-bg: rgba(16, 185, 129, 0.15);
+  --status-error: #EF4444;
+  --status-error-bg: rgba(239, 68, 68, 0.15);
+  --status-warning: #F59E0B;
+  --status-warning-bg: rgba(245, 158, 11, 0.15);
+  --status-info: #3B82F6;
+  --status-info-bg: rgba(59, 130, 246, 0.15);
 
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
