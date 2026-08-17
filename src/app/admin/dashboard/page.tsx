@@ -71,7 +71,19 @@ export default function AdminDashboard() {
   };
 
   if (authLoading || loading) return <div className={styles.loading}>Loading Admin Console...</div>;
-  if (!user || user.role?.toLowerCase() !== 'admin') return null;
+  if (!user || user.role?.toLowerCase() !== 'admin') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: '1rem', color: '#FFF', background: '#0A0A0A', fontFamily: 'sans-serif' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700 }}>🔒 Admin Access Required</h2>
+        <p style={{ color: '#9CA3AF', fontSize: '0.95rem' }}>
+          {user ? `You are currently logged in as a ${user.role} (${user.email || 'User'}).` : 'You are not signed in.'}
+        </p>
+        <Link href="/login?redirect=/admin/dashboard" className="btn btn-primary" style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: '#C9A84C', color: '#000', textDecoration: 'none', fontWeight: 600 }}>
+          Sign In as Admin →
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.dashboardLayout}>
