@@ -27,29 +27,34 @@ export default function AdminDashboard() {
   const [actionLoading, setActionLoading] = useState({});
 
   useEffect(() => {
-    if (!authLoading && (!user || user.role !== 'admin')) {
+    if (!authLoading && (!user || user.role?.toLowerCase() !== 'admin')) {
       router.push('/login?redirect=/admin/dashboard');
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
     let isMounted = true;
-    if (user && user.role === 'admin') {
+    if (user && user.role?.toLowerCase() === 'admin') {
       Promise.all([
-        supabase.from('bookings').select('id, amount, status', { count: 'exact' }),
+        supabase.from('profiles').select('id', { count: 'exact' }),
+        supabase.from('lawyers').select('id', { count: 'exact' }),
+        supabase.from('bookings').select('id, amount', { count: 'exact' }),
         supabase.from('lawyers').select('*, profiles!lawyers_id_fkey(*)').eq('verification_status', 'PENDING'),
-      ]).then(([bookingsRes, lawyersRes]) => {
+      ]).then(([usersRes, lawyersRes, bookingsRes, pendingRes]) => {
         if (isMounted) {
+          const pendingCount = pendingRes.data?.length || 0;
           setStats({
-            totalBookings: bookingsRes.count || 0,
+            totalUsers: usersRes.count || 0,
+            totalLawyers: lawyersRes.count || 0,
+            pendingLawyers: pendingCount,
+            totalAppointments: bookingsRes.count || 0,
             totalRevenue: bookingsRes.data?.reduce((acc, b) => acc + (b.amount || 0), 0) || 0,
-            pendingVerifications: lawyersRes.data?.length || 0
           });
-          setPendingLawyers(lawyersRes.data || []);
+          setPendingLawyers(pendingRes.data || []);
           setLoading(false);
         }
       }).catch(err => {
-        console.error(err);
+        console.error('Admin stats error:', err);
         if (isMounted) setLoading(false);
       });
     }
@@ -59,10 +64,14 @@ export default function AdminDashboard() {
   const handleVerify = async (lawyerId, status) => {
     setActionLoading(prev => ({ ...prev, [lawyerId]: true }));
     try {
-      await supabase.from('lawyers').update({ verification_status: status }).eq('id', lawyerId);
-      
+      const { error } = await supabase.from('lawyers').update({ verification_status: status }).eq('id', lawyerId);
+      if (error) throw error;
+
       setPendingLawyers(prev => prev.filter(l => l.id !== lawyerId));
-      setStats(prev => ({ ...prev, pendingVerifications: prev.pendingVerifications - 1 }));
+      setStats(prev => ({ 
+        ...prev, 
+        pendingLawyers: Math.max(0, (prev?.pendingLawyers || 1) - 1) 
+      }));
     } catch (err) {
       alert(err.message || 'Failed to update lawyer status');
     } finally {
@@ -103,14 +112,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <nav className={styles.nav}>
+        <nav className={styles.sidebarNav}>
           {SIDEBAR_LINKS.map(link => (
             <Link
               key={link.href}
               href={link.href}
-              className={`${styles.navItem} ${link.href === '/admin/dashboard' ? styles.navItemActive : ''}`}
+              className={`${styles.sidebarLink} ${link.href === '/admin/dashboard' ? styles.sidebarLinkActive || '' : ''}`}
+              style={link.href === '/admin/dashboard' ? { background: 'rgba(255,255,255,0.08)', color: '#FFF' } : {}}
             >
-              <span className={styles.navIcon}>{link.icon}</span>
+              <span className={styles.sidebarIcon}>{link.icon}</span>
               <span>{link.label}</span>
             </Link>
           ))}
@@ -171,58 +181,86 @@ export default function AdminDashboard() {
             </div>
 
             {pendingLawyers.length === 0 ? (
-              <div className="empty-state" style={{ background: '#111', borderRadius: '14px', border: '1px solid #1A1A1A' }}>
-                <div className="empty-state-icon">✅</div>
-                <div className="empty-state-title">Verification Queue Clean</div>
-                <p>There are no pending lawyer applications awaiting review.</p>
+              <div className="empty-state" style={{ background: '#111', padding: '2rem', textAlign: 'center', borderRadius: '14px', border: '1px solid #1A1A1A' }}>
+                <div className="empty-state-icon" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✅</div>
+                <div className="empty-state-title" style={{ color: '#FFF', fontWeight: 600 }}>Verification Queue Clean</div>
+                <p style={{ color: '#6B7280', fontSize: '0.875rem' }}>There are no pending lawyer applications awaiting review.</p>
               </div>
             ) : (
-              <div className="table-container">
-                <table className="table">
+              <div style={{ overflowX: 'auto', background: '#111', borderRadius: '14px', border: '1px solid #1A1A1A' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
                   <thead>
-                    <tr>
-                      <th>Lawyer Name</th>
-                      <th>Title & Bar No.</th>
-                      <th>Experience</th>
-                      <th>City</th>
-                      <th>Applied Date</th>
-                      <th>Actions</th>
+                    <tr style={{ borderBottom: '1px solid #1A1A1A', color: '#6B7280' }}>
+                      <th style={{ padding: '1rem' }}>LAWYER NAME</th>
+                      <th style={{ padding: '1rem' }}>TITLE & BAR NO.</th>
+                      <th style={{ padding: '1rem' }}>EXPERIENCE</th>
+                      <th style={{ padding: '1rem' }}>CITY</th>
+                      <th style={{ padding: '1rem' }}>APPLIED DATE</th>
+                      <th style={{ padding: '1rem' }}>ACTIONS</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {pendingLawyers.map(lawyer => (
-                      <tr key={lawyer.id}>
-                        <td>
-                          <strong style={{ color: '#FFF' }}>{lawyer.firstName} {lawyer.lastName}</strong>
-                          <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{lawyer.user?.email}</div>
-                        </td>
-                        <td>
-                          <div>{lawyer.professionalTitle || 'Advocate'}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#FFFFFF', fontFamily: 'monospace' }}>{lawyer.barNumber}</div>
-                        </td>
-                        <td>{lawyer.yearsOfExperience} years</td>
-                        <td>{lawyer.city || 'N/A'}</td>
-                        <td>{new Date(lawyer.createdAt).toLocaleDateString()}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '0.4rem' }}>
-                            <button
-                              className="btn btn-primary btn-sm"
-                              disabled={actionLoading[lawyer.id]}
-                              onClick={() => handleVerify(lawyer.id, 'APPROVED')}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              disabled={actionLoading[lawyer.id]}
-                              onClick={() => handleVerify(lawyer.id, 'REJECTED')}
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {pendingLawyers.map(lawyer => {
+                      const profile = lawyer.profiles || {};
+                      const firstName = profile.first_name || 'Advocate';
+                      const lastName = profile.last_name || '';
+                      const city = profile.city || 'Dhaka';
+                      const barNumber = lawyer.bar_number || 'N/A';
+                      const exp = lawyer.years_experience || 0;
+                      const dateStr = lawyer.created_at ? new Date(lawyer.created_at).toLocaleDateString() : 'N/A';
+
+                      return (
+                        <tr key={lawyer.id} style={{ borderBottom: '1px solid #1A1A1A' }}>
+                          <td style={{ padding: '1rem' }}>
+                            <strong style={{ color: '#FFF', display: 'block' }}>{firstName} {lastName}</strong>
+                            <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>{profile.email || 'Lawyer Account'}</div>
+                          </td>
+                          <td style={{ padding: '1rem' }}>
+                            <div style={{ color: '#E5E7EB' }}>{lawyer.bio ? (lawyer.bio.length > 30 ? lawyer.bio.slice(0, 30) + '...' : lawyer.bio) : 'Advocate'}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#9CA3AF', fontFamily: 'monospace' }}>{barNumber}</div>
+                          </td>
+                          <td style={{ padding: '1rem', color: '#D1D5DB' }}>{exp} years</td>
+                          <td style={{ padding: '1rem', color: '#D1D5DB' }}>{city}</td>
+                          <td style={{ padding: '1rem', color: '#D1D5DB' }}>{dateStr}</td>
+                          <td style={{ padding: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                style={{
+                                  background: '#10B981',
+                                  color: '#FFF',
+                                  border: 'none',
+                                  padding: '0.4rem 0.8rem',
+                                  borderRadius: '6px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  fontSize: '0.75rem'
+                                }}
+                                disabled={actionLoading[lawyer.id]}
+                                onClick={() => handleVerify(lawyer.id, 'APPROVED')}
+                              >
+                                {actionLoading[lawyer.id] ? '...' : 'Approve'}
+                              </button>
+                              <button
+                                style={{
+                                  background: '#EF4444',
+                                  color: '#FFF',
+                                  border: 'none',
+                                  padding: '0.4rem 0.8rem',
+                                  borderRadius: '6px',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                  fontSize: '0.75rem'
+                                }}
+                                disabled={actionLoading[lawyer.id]}
+                                onClick={() => handleVerify(lawyer.id, 'REJECTED')}
+                              >
+                                {actionLoading[lawyer.id] ? '...' : 'Reject'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
