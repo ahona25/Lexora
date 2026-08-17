@@ -143,34 +143,34 @@ export default function AdminDashboard() {
         <div className={styles.dashContent}>
           {/* STATS OVERVIEW */}
           <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
+            <Link href="/admin/users" className={styles.statCard} style={{ textDecoration: 'none' }}>
               <span className={styles.statIcon}>👥</span>
               <div>
                 <strong>{stats?.totalUsers || 0}</strong>
-                <span>Total Users</span>
+                <span>Total Users →</span>
               </div>
-            </div>
-            <div className={styles.statCard}>
+            </Link>
+            <Link href="/admin/lawyers" className={styles.statCard} style={{ textDecoration: 'none' }}>
               <span className={styles.statIcon}>⚖️</span>
               <div>
                 <strong>{stats?.totalLawyers || 0}</strong>
-                <span>Total Lawyers ({stats?.pendingLawyers || 0} pending)</span>
+                <span>Total Lawyers ({stats?.pendingLawyers || 0} pending) →</span>
               </div>
-            </div>
-            <div className={styles.statCard}>
+            </Link>
+            <Link href="/admin/appointments" className={styles.statCard} style={{ textDecoration: 'none' }}>
               <span className={styles.statIcon}>📅</span>
               <div>
                 <strong>{stats?.totalAppointments || 0}</strong>
-                <span>Appointments</span>
+                <span>Appointments →</span>
               </div>
-            </div>
-            <div className={styles.statCard}>
+            </Link>
+            <Link href="/admin/payments" className={styles.statCard} style={{ textDecoration: 'none' }}>
               <span className={styles.statIcon}>💰</span>
               <div>
                 <strong>৳ {Number(stats?.totalRevenue || 0).toLocaleString()}</strong>
-                <span>Platform Volume</span>
+                <span>Platform Volume →</span>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Pending Verification Queue */}
