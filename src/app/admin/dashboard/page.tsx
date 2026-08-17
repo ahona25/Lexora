@@ -71,7 +71,7 @@ export default function AdminDashboard() {
   };
 
   if (authLoading || loading) return <div className={styles.loading}>Loading Admin Console...</div>;
-  if (!user || user.role !== 'ADMIN') return null;
+  if (!user || user.role?.toLowerCase() !== 'admin') return null;
 
   return (
     <div className={styles.dashboardLayout}>
