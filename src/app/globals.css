@@ -366,6 +366,7 @@ input, textarea, select {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.85);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -443,6 +444,7 @@ input, textarea, select {
 /* Glass panel */
 .glass-panel {
   background: rgba(18, 18, 18, 0.7);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -451,5 +453,6 @@ input, textarea, select {
 .text-gold-gradient {
   background: #FFFFFF;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }

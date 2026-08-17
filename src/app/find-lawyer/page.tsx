@@ -359,6 +359,7 @@ function LawyerCard({ lawyer }) {
     <div className={styles.lawyerCard}>
       <div className={styles.lawyerCardLeft}>
         <div className={styles.lawyerAvatar}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={avatarUrl} alt={`${firstName} ${lastName}`} />
         </div>
       </div>
