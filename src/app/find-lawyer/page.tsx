@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
@@ -18,12 +18,10 @@ const SORT_OPTIONS = [
 
 function FindLawyerContent() {
   const searchParams = useSearchParams();
-  const [lawyers, setLawyers] = useState([]);
+  const [allLawyers, setAllLawyers] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -37,51 +35,111 @@ function FindLawyerContent() {
     sortBy: 'rating',
   });
 
+  // Load practice areas
   useEffect(() => {
     let isMounted = true;
-    const loadCategories = async () => {
-      const { data } = await supabase.from('practice_areas').select('*');
+    supabase.from('practice_areas').select('*').then(({ data }) => {
       if (isMounted && data) setCategories(data);
-    };
-    loadCategories();
+    });
     return () => { isMounted = false; };
   }, []);
 
+  // Fetch all lawyers from database
   useEffect(() => {
     let isMounted = true;
-    const load = async () => {
+    const fetchLawyers = async () => {
       try {
-        let query = supabase.from('lawyers').select('*, profiles(*), practice_areas(*)', { count: 'exact' });
-        
-        // Apply filters
-        if (filters.specializationId) query = query.eq('practice_area_id', filters.specializationId);
-        if (filters.city) query = query.ilike('profiles.city', `%${filters.city}%`);
-        if (filters.minExperience) query = query.gte('years_experience', Number(filters.minExperience));
-        if (filters.rating) query = query.gte('rating', Number(filters.rating));
-        
-        // Pagination
-        const limit = 12;
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-        query = query.range(from, to);
+        const { data, error } = await supabase
+          .from('lawyers')
+          .select('*, profiles(*), practice_areas(*)');
 
-        const { data, count, error } = await query;
         if (error) throw error;
-
         if (isMounted) {
-          setLawyers(data || []);
-          setTotal(count || 0);
-          setTotalPages(Math.ceil((count || 0) / limit) || 1);
+          setAllLawyers(data || []);
           setLoading(false);
         }
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching lawyers:', err);
         if (isMounted) setLoading(false);
       }
     };
-    load();
+    fetchLawyers();
     return () => { isMounted = false; };
-  }, [filters, page]);
+  }, []);
+
+  // Filter & Sort logic
+  const filteredAndSortedLawyers = useMemo(() => {
+    return allLawyers.filter(lawyer => {
+      const profile = lawyer.profiles || {};
+      const area = lawyer.practice_areas || {};
+      const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.toLowerCase();
+      const bio = (lawyer.bio || '').toLowerCase();
+      const bar = (lawyer.bar_number || '').toLowerCase();
+      const areaName = (area.name || '').toLowerCase();
+      const city = (profile.city || lawyer.city || '').toLowerCase();
+
+      // Search query filter (matches name, bio, bar no, practice area, or city)
+      if (filters.search) {
+        const q = filters.search.trim().toLowerCase();
+        const matchesSearch =
+          fullName.includes(q) ||
+          bio.includes(q) ||
+          bar.includes(q) ||
+          areaName.includes(q) ||
+          city.includes(q);
+        if (!matchesSearch) return false;
+      }
+
+      // Specialization filter
+      if (filters.specializationId && lawyer.practice_area_id !== filters.specializationId) {
+        return false;
+      }
+
+      // City filter
+      if (filters.city && !city.includes(filters.city.toLowerCase())) {
+        return false;
+      }
+
+      // Fee filters
+      const fee = lawyer.consultation_fee || lawyer.consultationFee || 0;
+      if (filters.minFee && fee < Number(filters.minFee)) return false;
+      if (filters.maxFee && fee > Number(filters.maxFee)) return false;
+
+      // Experience filter
+      const exp = lawyer.years_experience || lawyer.yearsOfExperience || 0;
+      if (filters.minExperience && exp < Number(filters.minExperience)) return false;
+
+      // Rating filter
+      const rating = lawyer.rating || 4.8;
+      if (filters.rating && rating < Number(filters.rating)) return false;
+
+      return true;
+    }).sort((a, b) => {
+      const ratingA = a.rating || 4.8;
+      const ratingB = b.rating || 4.8;
+      const expA = a.years_experience || 0;
+      const expB = b.years_experience || 0;
+      const feeA = a.consultation_fee || 0;
+      const feeB = b.consultation_fee || 0;
+      const reviewsA = a.total_reviews || 0;
+      const reviewsB = b.total_reviews || 0;
+
+      if (filters.sortBy === 'experience') return expB - expA;
+      if (filters.sortBy === 'lowest_fee') return feeA - feeB;
+      if (filters.sortBy === 'highest_fee') return feeB - feeA;
+      if (filters.sortBy === 'most_reviewed') return reviewsB - reviewsA;
+      return ratingB - ratingA; // default: highest rated
+    });
+  }, [allLawyers, filters]);
+
+  // Pagination calculation
+  const LIMIT = 12;
+  const total = filteredAndSortedLawyers.length;
+  const totalPages = Math.max(1, Math.ceil(total / LIMIT));
+  const paginatedLawyers = useMemo(() => {
+    const from = (page - 1) * LIMIT;
+    return filteredAndSortedLawyers.slice(from, from + LIMIT);
+  }, [filteredAndSortedLawyers, page]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -89,7 +147,16 @@ function FindLawyerContent() {
   };
 
   const resetFilters = () => {
-    setFilters({ search: '', specializationId: '', city: '', minFee: '', maxFee: '', minExperience: '', rating: '', sortBy: 'rating' });
+    setFilters({
+      search: '',
+      specializationId: '',
+      city: '',
+      minFee: '',
+      maxFee: '',
+      minExperience: '',
+      rating: '',
+      sortBy: 'rating',
+    });
     setPage(1);
   };
 
@@ -99,12 +166,12 @@ function FindLawyerContent() {
         <div className={styles.container}>
           <h1 className={styles.pageTitle}>Find a Lawyer</h1>
           <p className={styles.pageSubtitle}>
-            Search from 500+ verified legal professionals across Bangladesh
+            Search from verified legal professionals across Bangladesh
           </p>
           <div className={styles.quickSearch}>
             <input
               type="text"
-              placeholder="Search by name, specialization..."
+              placeholder="Search by name, specialization, keyword..."
               value={filters.search}
               onChange={e => handleFilterChange('search', e.target.value)}
               className={styles.quickSearchInput}
@@ -147,7 +214,7 @@ function FindLawyerContent() {
           </div>
 
           <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Consultation Fee (à§³)</label>
+            <label className={styles.filterLabel}>Consultation Fee (৳)</label>
             <div className={styles.rangeInputs}>
               <input
                 type="number"
@@ -156,7 +223,7 @@ function FindLawyerContent() {
                 onChange={e => handleFilterChange('minFee', e.target.value)}
                 className={styles.filterInput}
               />
-              <span className={styles.rangeSep}>â€”</span>
+              <span className={styles.rangeSep}>—</span>
               <input
                 type="number"
                 placeholder="Max"
@@ -184,6 +251,7 @@ function FindLawyerContent() {
               {[4.5, 4, 3.5, 3].map(r => (
                 <button
                   key={r}
+                  type="button"
                   className={`${styles.ratingBtn} ${filters.rating === String(r) ? styles.ratingActive : ''}`}
                   onClick={() => handleFilterChange('rating', filters.rating === String(r) ? '' : String(r))}
                 >
@@ -200,8 +268,8 @@ function FindLawyerContent() {
               {loading ? 'Searching...' : `${total} lawyers found`}
             </p>
             <div className={styles.sortBar}>
-              <button className={styles.filterToggle} onClick={() => setFiltersOpen(!filtersOpen)}>
-                âš™ï¸ Filters
+              <button type="button" className={styles.filterToggle} onClick={() => setFiltersOpen(!filtersOpen)}>
+                ⚙️ Filters
               </button>
               <select
                 value={filters.sortBy}
@@ -217,7 +285,7 @@ function FindLawyerContent() {
 
           {loading ? (
             <div className={styles.lawyersGrid}>
-              {Array.from({ length: 9 }).map((_, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className={styles.lawyerCardSkeleton}>
                   <div className={`skeleton ${styles.skeletonAvatar}`} />
                   <div style={{ flex: 1 }}>
@@ -227,11 +295,11 @@ function FindLawyerContent() {
                 </div>
               ))}
             </div>
-          ) : lawyers.length === 0 ? (
+          ) : paginatedLawyers.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-state-icon"></div>
+              <div className="empty-state-icon">🔍</div>
               <h3 className="empty-state-title">No Lawyers Found</h3>
-              <p>No lawyers match your current filter criteria.</p>
+              <p>No lawyers match your current search or filter criteria.</p>
               <button onClick={resetFilters} className="btn btn-secondary" style={{ marginTop: '1rem' }}>
                 Clear Filters
               </button>
@@ -239,18 +307,18 @@ function FindLawyerContent() {
           ) : (
             <>
               <div className={styles.lawyersGrid}>
-                {lawyers.map(lawyer => (
+                {paginatedLawyers.map(lawyer => (
                   <LawyerCard key={lawyer.id} lawyer={lawyer} />
                 ))}
               </div>
               {totalPages > 1 && (
                 <div className={styles.pagination}>
                   <button className="btn btn-secondary btn-sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
-                    â† Previous
+                    ← Previous
                   </button>
                   <span className={styles.pageInfo}>Page {page} of {totalPages}</span>
                   <button className="btn btn-secondary btn-sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
-                    Next â†’
+                    Next →
                   </button>
                 </div>
               )}
